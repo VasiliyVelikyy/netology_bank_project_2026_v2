@@ -30,7 +30,7 @@ public class BankAccountService {
     public BankAccount getAccount(String accountNumber) {
         Optional<BankAccount> account = bankAccountRepository.findById(accountNumber);
         return account.orElseThrow(() ->
-                new RuntimeException("Счёт не найден: " + accountNumber));
+                                           new RuntimeException("Счёт не найден: " + accountNumber));
     }
 
     public BankAccount saveAccount(BankAccount account) {
@@ -118,11 +118,11 @@ public class BankAccountService {
 
     @Transactional
     public void transferWithPark(String fromNum, String toNum, Lock lock, double amount, boolean shouldHoldLock) {
-       log.info(Thread.currentThread().getName() + ": пытается захватить lock");
+        log.info(Thread.currentThread().getName() + ": пытается захватить lock");
 
         lock.lock();
         try {
-           log.info(Thread.currentThread().getName() + ": ЗАХВАТИЛ lock.");
+            log.info(Thread.currentThread().getName() + ": ЗАХВАТИЛ lock.");
 
             BankAccount fromAcc = getAccount(fromNum);
             BankAccount toAcc = getAccount(toNum);
@@ -131,10 +131,11 @@ public class BankAccountService {
                 throw new RuntimeException("Недостаточно средств: " + fromNum);
             }
 
-            if (shouldHoldLock) {
-                log.info(Thread.currentThread().getName() + ": удерживаю lock несколько секунд (имитация долгой операции)");
-                simulateCpuWork(Thread.currentThread().getName(), 20000);
-            }
+//            if (shouldHoldLock) {
+//
+//            }
+            log.info(Thread.currentThread().getName() + ": удерживаю lock несколько секунд (имитация долгой операции)");
+            simulateCpuWork(Thread.currentThread().getName(), 10000);
 
             fromAcc.setBalance(fromAcc.getBalance() - amount);
             toAcc.setBalance(toAcc.getBalance() + amount);
@@ -147,5 +148,37 @@ public class BankAccountService {
 
     public long count() {
         return bankAccountRepository.count();
+    }
+
+    public void saveAll(List<BankAccount> bankAccounts) {
+        bankAccountRepository.saveAll(bankAccounts);
+    }
+
+    public List<BankAccount> findAll() {
+        return bankAccountRepository.findAll();
+    }
+
+
+    public void transferWithStream(String fromAcc, String toAcc, double amount) {
+
+        String first = fromAcc.compareTo(toAcc) < 0 ? fromAcc : toAcc;
+        String second = fromAcc.compareTo(toAcc) < 0 ? toAcc : fromAcc;
+
+        synchronized (first.intern()) {
+            synchronized (second.intern()) {
+                BankAccount from = getAccount(fromAcc);
+                BankAccount to = getAccount(toAcc);
+
+                if (from.getBalance() < amount) {
+                    throw new RuntimeException("Недостаточно средств " + from);
+                }
+
+                from.setBalance(from.getBalance() - amount);
+                to.setBalance(to.getBalance() + amount);
+
+                bankAccountRepository.save(from);
+                bankAccountRepository.save(to);
+            }
+        }
     }
 }
