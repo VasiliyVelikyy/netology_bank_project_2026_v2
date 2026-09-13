@@ -14,7 +14,6 @@ public class ProcessService {
     private final TransferSleepStateService transferSleepStateService;
     private final TransferBlockedStateService transferWithBlock;
 
-
     public String startDemon() {
         return transferDaemonService.startDemon();
     }

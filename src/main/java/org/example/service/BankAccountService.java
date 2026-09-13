@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.locks.Lock;
 
+import static org.example.util.LoggingUtils.loggingMoneyTransfer;
 import static org.example.util.TaskSimulateWork.simulateCpuWork;
 
 @Slf4j
@@ -19,22 +20,16 @@ import static org.example.util.TaskSimulateWork.simulateCpuWork;
 public class BankAccountService {
     private final BankAccountRepository bankAccountRepository;
 
+    private final Object monitor = new Object();
+
     public BankAccountService(BankAccountRepository bankAccountRepository) {
         this.bankAccountRepository = bankAccountRepository;
-    }
-
-    public List<BankAccount> getAllAccounts() {
-        return bankAccountRepository.findAll();
     }
 
     public BankAccount getAccount(String accountNumber) {
         Optional<BankAccount> account = bankAccountRepository.findById(accountNumber);
         return account.orElseThrow(() ->
                                            new RuntimeException("Счёт не найден: " + accountNumber));
-    }
-
-    public BankAccount saveAccount(BankAccount account) {
-        return bankAccountRepository.save(account);
     }
 
     public void transfer(String accountFrom, String accountTo, double amount) {
@@ -45,11 +40,7 @@ public class BankAccountService {
             throw new RuntimeException("Недостаточно средств " + accountFrom);
         }
 
-        from.setBalance(from.getBalance() - amount);
-        to.setBalance(to.getBalance() + amount);
-
-        bankAccountRepository.save(from);
-        bankAccountRepository.save(to);
+        setTransferAmountAndSave(amount, from, to);
     }
 
     public void transferWithBlock(String accountFrom, String accountTo, double amount, Object monitor) {
@@ -65,15 +56,11 @@ public class BankAccountService {
                 throw new RuntimeException("Недостаточно средств " + accountFrom);
             }
 
-            simulateCpuWork(threadName, 5000);
+            simulateCpuWork(5000);
 
-            from.setBalance(from.getBalance() - amount);
-            to.setBalance(to.getBalance() + amount);
+            setTransferAmountAndSave(amount, from, to);
 
-            bankAccountRepository.save(from);
-            bankAccountRepository.save(to);
-
-            log.info(threadName + " перевод " + amount + "выполне с " + accountFrom + " на " + accountTo);
+            loggingMoneyTransfer(accountFrom, accountTo, amount);
         }
     }
 
@@ -83,7 +70,7 @@ public class BankAccountService {
         synchronized (monitor) {
             String threadName = Thread.currentThread().getName();
 
-            log.info(threadName + " захватил монитор");
+            log.info( "{} захватил монитор",threadName);
             BankAccount from = getAccount(accountFrom);
             BankAccount to = getAccount(accountTo);
 
@@ -91,38 +78,34 @@ public class BankAccountService {
                 throw new RuntimeException("Недостаточно средств " + accountFrom);
             }
             if (shouldWait) {
-                log.info(threadName + " захватил монитор , теперб жду через wait");
+                log.info("{}, захватил монитор , теперб жду через wait",threadName);
                 try {
                     monitor.wait();
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                     throw new RuntimeException(" Операция прервана");
                 }
-                log.info(threadName + " проснулся после notify");
+                log.info("{} проснулся после notify",threadName);
             } else {
-                log.info(threadName + " захватил монитор , вызываю notify и уходит");
+                log.info("{} захватил монитор , вызываю notify и уходит ",threadName);
                 monitor.notify();
             }
 
-            simulateCpuWork(threadName, 5000);
+            simulateCpuWork(5000);
 
-            from.setBalance(from.getBalance() - amount);
-            to.setBalance(to.getBalance() + amount);
+            setTransferAmountAndSave(amount, from, to);
 
-            bankAccountRepository.save(from);
-            bankAccountRepository.save(to);
-
-            log.info(threadName + " перевод " + amount + "выполне с " + accountFrom + " на " + accountTo);
+            loggingMoneyTransfer(accountFrom, accountTo, amount);
         }
     }
 
     @Transactional
     public void transferWithPark(String fromNum, String toNum, Lock lock, double amount, boolean shouldHoldLock) {
-        log.info(Thread.currentThread().getName() + ": пытается захватить lock");
+        log.info( "{} : пытается захватить lock",Thread.currentThread().getName());
 
         lock.lock();
         try {
-            log.info(Thread.currentThread().getName() + ": ЗАХВАТИЛ lock.");
+            log.info("{} : ЗАХВАТИЛ lock.",Thread.currentThread().getName());
 
             BankAccount fromAcc = getAccount(fromNum);
             BankAccount toAcc = getAccount(toNum);
@@ -131,16 +114,13 @@ public class BankAccountService {
                 throw new RuntimeException("Недостаточно средств: " + fromNum);
             }
 
-//            if (shouldHoldLock) {
-//
-//            }
-            log.info(Thread.currentThread().getName() + ": удерживаю lock несколько секунд (имитация долгой операции)");
-            simulateCpuWork(Thread.currentThread().getName(), 10000);
+            log.info("{}: удерживаю lock несколько секунд (имитация долгой операции)",Thread.currentThread().getName());
+            simulateCpuWork(10000);
 
             fromAcc.setBalance(fromAcc.getBalance() - amount);
             toAcc.setBalance(toAcc.getBalance() + amount);
 
-            log.info(Thread.currentThread().getName() + ": перевод " + amount + " с " + fromNum + " на " + toNum + " выполнен.");
+            loggingMoneyTransfer(fromNum, toNum, amount);
         } finally {
             lock.unlock();
         }
@@ -159,7 +139,7 @@ public class BankAccountService {
     }
 
 
-    public void transferWithStream(String fromAcc, String toAcc, double amount) {
+    public void transferForStream(String fromAcc, String toAcc, double amount) {
 
         String first = fromAcc.compareTo(toAcc) < 0 ? fromAcc : toAcc;
         String second = fromAcc.compareTo(toAcc) < 0 ? toAcc : fromAcc;
@@ -173,12 +153,37 @@ public class BankAccountService {
                     throw new RuntimeException("Недостаточно средств " + from);
                 }
 
-                from.setBalance(from.getBalance() - amount);
-                to.setBalance(to.getBalance() + amount);
-
-                bankAccountRepository.save(from);
-                bankAccountRepository.save(to);
+                setTransferAmountAndSave(amount, from, to);
             }
         }
     }
+
+    public void transferForStreamBlockOneMonitor(String from, String to, double amount) {
+        synchronized (monitor) {
+
+            BankAccount fromAcc = getAccount(from);
+            BankAccount toAcc = getAccount(to);
+
+            if (fromAcc.getBalance() < amount) {
+                throw new RuntimeException("Недостаточно средств: " + from);
+            }
+
+            setTransferAmountAndSave(amount, fromAcc, toAcc);
+
+            loggingMoneyTransfer(from, to, amount);
+        }
+    }
+
+    private void setTransferAmountAndSave(double amount, BankAccount from, BankAccount to) {
+        double newFromBalance = Math.round((from.getBalance() - amount) * 100.0) / 100.0;
+        double newToBalance = Math.round((to.getBalance() + amount) * 100.0) / 100.0;
+
+        from.setBalance(newFromBalance);
+        to.setBalance(newToBalance);
+
+        bankAccountRepository.save(from);
+        bankAccountRepository.save(to);
+    }
+
+
 }

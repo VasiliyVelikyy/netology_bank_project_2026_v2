@@ -22,13 +22,13 @@ public class StreamTransferController {
         return streamTransferService.startParallelStream();
     }
 
-//    @GetMapping("/start-parallel-stream/block")
-//    public String startParallelStreamBlock() {
-//        return streamTransferService.startParallelStreamBlock();
-//    }
-//
-//    @GetMapping("/start-fork-join-parallel-stream")
-//    public String startForkJoinPoolParallelStream() {
-//        return streamTransferService.startForkJoinPoolParallelStream();
-//    }
+    @GetMapping("/start-parallel-stream/block")
+    public String startParallelStreamBlock() {
+        return streamTransferService.startParallelStreamBlock();
+    }
+
+    @GetMapping("/start-fork-join-parallel-stream")
+    public String startForkJoinPoolParallelStream() {
+        return streamTransferService.startForkJoinPoolParallelStream();
+    }
 }

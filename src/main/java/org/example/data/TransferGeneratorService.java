@@ -14,6 +14,13 @@ import java.util.stream.IntStream;
 public class TransferGeneratorService {
     private final BankAccountService bankAccountService;
 
+
+    private List<String> getAllAccountNumber() {
+        return bankAccountService.findAll().stream()
+                .map(BankAccount::getAccountNumber)
+                .toList();
+    }
+
     public List<TransferOperation> generateTransfer(int count) {
         List<String> accounts = getAllAccountNumber();
         Random rand = new Random();
@@ -26,22 +33,13 @@ public class TransferGeneratorService {
                                 to = accounts.get(rand.nextInt(accounts.size()));
                             } while (from.equals(to));
 
-                            double amount = 1 + rand.nextDouble() + 9; //1 -10
+                            double rawAmount = 1 + rand.nextDouble() + 9; //1 -10
+                            double amount = Math.round(rawAmount * 100.0) / 100.0;
                             return new TransferOperation(from, to, amount);
                         }).toList();
 
     }
 
-    private List<String> getAllAccountNumber() {
-        return bankAccountService.findAll().stream()
-                                 .map(BankAccount::getAccountNumber)
-                                 .toList();
-    }
 
-
-    public record TransferOperation(String from, String to, double amount) {
-
-    }
-
-    ;
+    public record TransferOperation(String from, String to, double amount) { }
 }
