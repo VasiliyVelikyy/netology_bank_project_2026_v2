@@ -3,6 +3,8 @@ package org.example.task;
 import lombok.extern.slf4j.Slf4j;
 import org.example.service.BankAccountService;
 
+import static org.example.util.LoggingUtils.loggingThreadError;
+
 @Slf4j
 public class TransferTask implements Runnable {
     private final String fromAccountNumber;
@@ -22,14 +24,16 @@ public class TransferTask implements Runnable {
 
     @Override
     public void run() {
-       // try {
-            log.info("Поток " + Thread.currentThread().getName()
-                    + " Стартовал. Приоритет: " + Thread.currentThread().getPriority());
+        try {
+            log.info("Поток '{}' стартовал. Приоритет: {}",
+                    Thread.currentThread().getName(),
+                    Thread.currentThread().getPriority());
 
             bankAccountService.transfer(fromAccountNumber, toAccountNumber, amount);
-//        } catch (RuntimeException e) {
-//            log.error("Ошибка в потоке " + Thread.currentThread().getName() + " errorMessage " + e.getMessage());
-//        }
+        } catch (Exception e) {
+            loggingThreadError(e);
+            throw new RuntimeException(e);
+        }
 
     }
 }

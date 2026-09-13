@@ -10,8 +10,10 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.concurrent.ForkJoinPool;
 
-import static org.example.task.LoggingUtils.loggingCommonPool;
+import static org.example.util.LoggingUtils.loggingCommonPool;
+import static org.example.util.LoggingUtils.loggingCustomPoolStats;
 import static org.example.util.Constants.TRANSFER_COUNT;
 import static org.example.util.TimeUtil.evaluateExecutionTime;
 
@@ -25,7 +27,7 @@ public class StreamTransferService implements ApplicationRunner {
     private List<TransferGeneratorService.TransferOperation> operations;
 
     @Override
-    public void run(ApplicationArguments args) throws Exception {
+    public void run(ApplicationArguments args) {
         operations = transferGeneratorService.generateTransfer(TRANSFER_COUNT);
     }
 
@@ -33,7 +35,7 @@ public class StreamTransferService implements ApplicationRunner {
         long start = System.nanoTime();
 
         operations.forEach(op ->
-                                   bankAccountService.transferWithStream(op.from(),
+                                   bankAccountService.transferForStream(op.from(),
                                                                          op.to(), op.amount()));
         return evaluateExecutionTime(start);
     }
@@ -42,11 +44,40 @@ public class StreamTransferService implements ApplicationRunner {
         long start = System.nanoTime();
 
         operations.parallelStream().forEach(op ->
-                                                    bankAccountService.transferWithStream(op.from(),
+                                                    bankAccountService.transferForStream(op.from(),
                                                                                           op.to(),
                                                                                           op.amount()));
 
         loggingCommonPool();
         return evaluateExecutionTime(start);
     }
+
+    public String startParallelStreamBlock() {
+        long start = System.nanoTime();
+
+        operations.parallelStream()
+                .forEach(op -> bankAccountService.transferForStreamBlockOneMonitor(op.from(), op.to(), op.amount()));
+        loggingCommonPool();
+
+        return evaluateExecutionTime(start);
+    }
+
+    public String startForkJoinPoolParallelStream() {
+        long start = System.nanoTime();
+
+        ForkJoinPool customPool = new ForkJoinPool(4);
+
+        customPool.submit(() ->
+                operations.parallelStream()
+                        .forEach(op -> bankAccountService.transferForStream(op.from(), op.to(), op.amount()))
+        ).join();
+
+        loggingCustomPoolStats(customPool);
+
+        customPool.shutdown();
+
+        return evaluateExecutionTime(start);
+    }
+
+
 }

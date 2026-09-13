@@ -9,8 +9,8 @@ public class TimeUtil {
         long durationNanos = endTime - startTime;
         double durationSec = durationNanos / 1_000_000_000.0;
         String message = String.format("Время выполнения: %.3f секунд (%d наносекунды)",
-                                       durationSec,
-                                       durationNanos);
+                durationSec,
+                durationNanos);
         printExecutionTime(message);
         return message;
     }

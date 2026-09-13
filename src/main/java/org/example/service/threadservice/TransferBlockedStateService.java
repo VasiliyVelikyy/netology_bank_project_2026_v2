@@ -5,6 +5,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.example.service.BankAccountService;
 import org.springframework.stereotype.Service;
 
+import static org.example.util.LoggingUtils.loggingStartThread;
+
 @Service
 @Slf4j
 @RequiredArgsConstructor
@@ -14,13 +16,13 @@ public class TransferBlockedStateService {
     public String startBlocked() {
         Object monitor = new Object();
         Thread blocker = new Thread(() -> {
-            log.info("поток " + Thread.currentThread().getName() + " стартовал");
+            loggingStartThread();
             bankAccountService.transferWithBlock("ACC001", "ACC002", 20.0, monitor);
         }, "Trasnfer-blocker");
 
 
         Thread blockee = new Thread(() -> {
-            log.info("поток " + Thread.currentThread().getName() + " стартовал");
+            loggingStartThread();
             bankAccountService.transferWithBlock("ACC002", "ACC003", 20.0, monitor);
         }, "Transfer-blockee");
 

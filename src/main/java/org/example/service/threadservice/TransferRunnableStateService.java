@@ -2,7 +2,7 @@ package org.example.service.threadservice;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.example.ErrorHandler;
+import org.example.util.ErrorHandler;
 import org.example.service.BankAccountService;
 import org.example.task.TransferTask;
 import org.springframework.context.ConfigurableApplicationContext;

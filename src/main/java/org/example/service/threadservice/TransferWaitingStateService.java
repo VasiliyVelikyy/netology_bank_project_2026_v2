@@ -8,6 +8,9 @@ import org.springframework.stereotype.Service;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+import static org.example.util.LoggingUtils.loggingStartThread;
+import static org.example.util.LoggingUtils.loggingThreadError;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -18,13 +21,13 @@ public class TransferWaitingStateService {
         Object monitor=new Object();
 
         Thread waiter = new Thread(() -> {
-            log.info("поток " + Thread.currentThread().getName() + " стартовал");
+            loggingStartThread();
             bankAccountService.transferWithWait("ACC005", "ACC006", 20.0, monitor, true);
         }, "Trasnfer-waiter");
 
 
         Thread notifier = new Thread(() -> {
-            log.info("поток " + Thread.currentThread().getName() + " стартовал");
+            loggingStartThread();
             // Thread.sleep(5000);
             bankAccountService.transferWithWait("ACC006", "ACC007", 20.0, monitor, false);
         }, "Trasnfer-notifier");
@@ -39,22 +42,22 @@ public class TransferWaitingStateService {
 
         Thread parkHolder = new Thread(() -> {
             try {
-                log.info("[" + Thread.currentThread().getName() + "] Стартовал.");
+                loggingStartThread();
                 bankAccountService.transferWithPark("ACC005", "ACC006", lock, 20.0, false);
             } catch (Exception e) {
-                System.err.println("Ошибка в parkHolder: " + e.getMessage());
+                loggingThreadError(e);
             }
         }, "Transfer-Park-Holder");
 
 
         Thread parkWaiter = new Thread(() -> {
             try {
-                log.info("[" + Thread.currentThread().getName() + "] Стартовал.");
+                loggingStartThread();
                 //Thread.sleep(5000);
                 // Запускаем сразу — чтобы parkWaiter попал в ожидание (park)
                 bankAccountService.transferWithPark("ACC006", "ACC007", lock, 30.0, false);
             } catch (Exception e) {
-                System.err.println("Ошибка в parkWaiter: " + e.getMessage());
+                loggingThreadError(e);
             }
         }, "Transfer-Park-Waiter");
 

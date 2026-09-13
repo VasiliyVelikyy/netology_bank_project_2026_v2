@@ -3,6 +3,8 @@ package org.example.service.threadservice;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import static org.example.util.LoggingUtils.loggingThreadError;
+
 @Service
 @Slf4j
 public class TransferSleepStateService {
@@ -12,10 +14,10 @@ public class TransferSleepStateService {
             try {
                 Thread.sleep(10000);
             } catch (InterruptedException e) {
-                log.error("error " + e.getMessage());
+                loggingThreadError(e);
             }
         },
-                                        "sleepthread");
+                "sleepthread");
         threadSleep.start();
         return "ok";
     }

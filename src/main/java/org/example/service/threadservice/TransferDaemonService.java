@@ -14,7 +14,6 @@ public class TransferDaemonService {
     private final BankAccountService bankAccountService;
 
     public String startDemon() {
-
         var loggedTask = new LoggerTask(bankAccountService);
         Thread loggedthread = new Thread(loggedTask);
         loggedthread.setDaemon(true);
