@@ -2,7 +2,7 @@ package org.example.data;
 
 import lombok.RequiredArgsConstructor;
 import org.example.domain.BankAccount;
-import org.example.service.BankAccountService;
+import org.example.service.bank_account.BankAccountService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

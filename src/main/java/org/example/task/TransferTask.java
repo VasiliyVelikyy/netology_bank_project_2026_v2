@@ -1,7 +1,7 @@
 package org.example.task;
 
 import lombok.extern.slf4j.Slf4j;
-import org.example.service.BankAccountService;
+import org.example.service.bank_account.BankAccountService;
 
 import static org.example.util.LoggingUtils.loggingThreadError;
 

@@ -3,7 +3,7 @@ package org.example.task;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import lombok.extern.slf4j.Slf4j;
-import org.example.service.BankAccountService;
+import org.example.service.bank_account.BankAccountService;
 import org.springframework.stereotype.Component;
 
 import static org.example.util.LoggingUtils.loggingThreadError;
@@ -41,7 +41,7 @@ public class LoggerTask implements Runnable {
             try {
                 long count = bankAccountService.count();
                 log.info("[ДЕМОН] Количество счетов: {}", count);
-                Thread.sleep(10000);
+                Thread.sleep(100000);
             } catch (InterruptedException e) {
                 log.error("Демон поток остановлен");
                 Thread.currentThread().interrupt();

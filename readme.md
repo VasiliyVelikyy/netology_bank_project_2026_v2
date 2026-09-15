@@ -20,3 +20,12 @@ http://localhost:8080/start-stream
 http://localhost:8080/start-parallel-stream
 http://localhost:8080/start-parallel-stream/block
 http://localhost:8080/start-fork-join-parallel-stream
+
+
+# Synchronization thread problem
+http://localhost:8080/race-condition
+http://localhost:8080/race-condition/sync
+http://localhost:8080/transfer-deadlock
+http://localhost:8080/transfer-livelock
+http://localhost:8080/transfer-livelock-max-attempt
+http://localhost:8080/transfer-starvation

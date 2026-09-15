@@ -2,7 +2,7 @@ package org.example.service.threadservice;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.example.service.BankAccountService;
+import org.example.service.bank_account.BankAccountProfilingExampleService;
 import org.springframework.stereotype.Service;
 
 import java.util.concurrent.locks.Lock;
@@ -15,21 +15,21 @@ import static org.example.util.LoggingUtils.loggingThreadError;
 @RequiredArgsConstructor
 @Slf4j
 public class TransferWaitingStateService {
-    private final BankAccountService bankAccountService;
+    private final BankAccountProfilingExampleService profilingExampleService;
 
     public String startWaiting() {
         Object monitor=new Object();
 
         Thread waiter = new Thread(() -> {
             loggingStartThread();
-            bankAccountService.transferWithWait("ACC005", "ACC006", 20.0, monitor, true);
+            profilingExampleService.transferWithWait("ACC005", "ACC006", 20.0, monitor, true);
         }, "Trasnfer-waiter");
 
 
         Thread notifier = new Thread(() -> {
             loggingStartThread();
             // Thread.sleep(5000);
-            bankAccountService.transferWithWait("ACC006", "ACC007", 20.0, monitor, false);
+            profilingExampleService.transferWithWait("ACC006", "ACC007", 20.0, monitor, false);
         }, "Trasnfer-notifier");
 
         waiter.start();
@@ -43,7 +43,7 @@ public class TransferWaitingStateService {
         Thread parkHolder = new Thread(() -> {
             try {
                 loggingStartThread();
-                bankAccountService.transferWithPark("ACC005", "ACC006", lock, 20.0, false);
+                profilingExampleService.transferWithPark("ACC005", "ACC006", lock, 20.0);
             } catch (Exception e) {
                 loggingThreadError(e);
             }
@@ -55,7 +55,7 @@ public class TransferWaitingStateService {
                 loggingStartThread();
                 //Thread.sleep(5000);
                 // Запускаем сразу — чтобы parkWaiter попал в ожидание (park)
-                bankAccountService.transferWithPark("ACC006", "ACC007", lock, 30.0, false);
+                profilingExampleService.transferWithPark("ACC006", "ACC007", lock, 30.0);
             } catch (Exception e) {
                 loggingThreadError(e);
             }
