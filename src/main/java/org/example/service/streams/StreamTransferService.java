@@ -4,7 +4,7 @@ package org.example.service.streams;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.data.TransferGeneratorService;
-import org.example.service.BankAccountService;
+import org.example.service.bank_account.BankAccountService;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Service;
@@ -35,7 +35,7 @@ public class StreamTransferService implements ApplicationRunner {
         long start = System.nanoTime();
 
         operations.forEach(op ->
-                                   bankAccountService.transferForStream(op.from(),
+                                   bankAccountService.transferWithDoubleSync(op.from(),
                                                                          op.to(), op.amount()));
         return evaluateExecutionTime(start);
     }
@@ -44,7 +44,7 @@ public class StreamTransferService implements ApplicationRunner {
         long start = System.nanoTime();
 
         operations.parallelStream().forEach(op ->
-                                                    bankAccountService.transferForStream(op.from(),
+                                                    bankAccountService.transferWithDoubleSync(op.from(),
                                                                                           op.to(),
                                                                                           op.amount()));
 
@@ -69,7 +69,7 @@ public class StreamTransferService implements ApplicationRunner {
 
         customPool.submit(() ->
                 operations.parallelStream()
-                        .forEach(op -> bankAccountService.transferForStream(op.from(), op.to(), op.amount()))
+                        .forEach(op -> bankAccountService.transferWithDoubleSync(op.from(), op.to(), op.amount()))
         ).join();
 
         loggingCustomPoolStats(customPool);

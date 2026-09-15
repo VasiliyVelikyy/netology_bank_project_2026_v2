@@ -2,7 +2,7 @@ package org.example.service.threadservice;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.example.service.BankAccountService;
+import org.example.service.bank_account.BankAccountService;
 import org.example.task.LoggerTask;
 import org.springframework.stereotype.Service;
 

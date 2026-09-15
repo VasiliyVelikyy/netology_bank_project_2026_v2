@@ -4,7 +4,7 @@ import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.domain.BankAccount;
-import org.example.service.BankAccountService;
+import org.example.service.bank_account.BankAccountService;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
