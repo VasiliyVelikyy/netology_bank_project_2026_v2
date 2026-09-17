@@ -41,7 +41,6 @@ public class BankAccountService {
     }
 
 
-
     public long count() {
         return bankAccountRepository.count();
     }
@@ -73,7 +72,7 @@ public class BankAccountService {
 
             }
         }
-        loggingMoneyTransfer(fromAcc,toAcc,amount);
+        loggingMoneyTransfer(fromAcc, toAcc, amount);
     }
 
 
@@ -107,11 +106,11 @@ public class BankAccountService {
     public void transferWithDeadlock(String fromAcc, String toAcc, double amount) throws InterruptedException {
 
         synchronized (fromAcc.intern()) {
-            log.info("{} ,захватил {}",Thread.currentThread().getName(),fromAcc);
+            log.info("{} ,захватил {}", Thread.currentThread().getName(), fromAcc);
 
             Thread.sleep(100);
 
-            log.info("{} ,пытается захватить {}",Thread.currentThread().getName(),toAcc);
+            log.info("{} ,пытается захватить {}", Thread.currentThread().getName(), toAcc);
 
             synchronized (toAcc.intern()) {
                 BankAccount from = getAccount(fromAcc);
@@ -123,8 +122,12 @@ public class BankAccountService {
 
                 setTransferAmountAndSave(amount, from, to);
 
-                loggingMoneyTransfer(fromAcc,toAcc,amount);
+                loggingMoneyTransfer(fromAcc, toAcc, amount);
             }
         }
+    }
+
+    public void save(BankAccount account) {
+        bankAccountRepository.save(account);
     }
 }

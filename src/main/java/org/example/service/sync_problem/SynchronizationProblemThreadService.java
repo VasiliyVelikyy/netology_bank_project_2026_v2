@@ -194,7 +194,7 @@ public class SynchronizationProblemThreadService {
                     profilingExampleService.transferWithPark(ACC_2, ACC_1, lock, 10);
                     starvingCount.incrementAndGet();
 
-                    Thread.sleep(1000);
+                    //Thread.sleep(1000);
                 } catch (Exception e) {
                     loggingThreadError(e);
                 }

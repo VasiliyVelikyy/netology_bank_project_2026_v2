@@ -29,3 +29,10 @@ http://localhost:8080/transfer-deadlock
 http://localhost:8080/transfer-livelock
 http://localhost:8080/transfer-livelock-max-attempt
 http://localhost:8080/transfer-starvation
+
+# Reentrant lock, semaphore, producer-consumer
+http://localhost:8080/try-lock
+http://localhost:8080/process-producer-consumer
+http://localhost:8080/process-semaphore
+http://localhost:8080/process-read-write-lock
+http://localhost:8080/process-read-write-lock-downgrade
