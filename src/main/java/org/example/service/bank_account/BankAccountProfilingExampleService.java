@@ -44,7 +44,7 @@ public class BankAccountProfilingExampleService {
         synchronized (monitor) {
             String threadName = Thread.currentThread().getName();
 
-            log.info( "{} захватил монитор",threadName);
+            log.info("{} захватил монитор", threadName);
             BankAccount from = bankAccountService.getAccount(accountFrom);
             BankAccount to = bankAccountService.getAccount(accountTo);
 
@@ -52,16 +52,16 @@ public class BankAccountProfilingExampleService {
                 throw new RuntimeException("Недостаточно средств " + accountFrom);
             }
             if (shouldWait) {
-                log.info("{}, захватил монитор , теперб жду через wait",threadName);
+                log.info("{}, захватил монитор , теперб жду через wait", threadName);
                 try {
                     monitor.wait();
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                     throw new RuntimeException(" Операция прервана");
                 }
-                log.info("{} проснулся после notify",threadName);
+                log.info("{} проснулся после notify", threadName);
             } else {
-                log.info("{} захватил монитор , вызываю notify и уходит ",threadName);
+                log.info("{} захватил монитор , вызываю notify и уходит ", threadName);
                 monitor.notify();
             }
 
@@ -75,11 +75,11 @@ public class BankAccountProfilingExampleService {
 
     @Transactional
     public void transferWithPark(String fromNum, String toNum, Lock lock, double amount) {
-        log.info( "{} : пытается захватить lock",Thread.currentThread().getName());
+        log.info("{} : пытается захватить lock", Thread.currentThread().getName());
 
         lock.lock();
         try {
-            log.info("{} : ЗАХВАТИЛ lock.",Thread.currentThread().getName());
+            log.info("{} : ЗАХВАТИЛ lock.", Thread.currentThread().getName());
 
             BankAccount fromAcc = bankAccountService.getAccount(fromNum);
             BankAccount toAcc = bankAccountService.getAccount(toNum);
@@ -88,8 +88,8 @@ public class BankAccountProfilingExampleService {
                 throw new RuntimeException("Недостаточно средств: " + fromNum);
             }
 
-            log.info("{}: удерживаю lock несколько секунд (имитация долгой операции)",Thread.currentThread().getName());
-            simulateCpuWork(10000);
+            log.info("{}: удерживаю lock несколько секунд (имитация долгой операции)", Thread.currentThread().getName());
+            simulateCpuWork(30);
 
             fromAcc.setBalance(fromAcc.getBalance() - amount);
             toAcc.setBalance(toAcc.getBalance() + amount);
