@@ -13,14 +13,14 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+import static org.example.util.Constants.ACC_1;
+import static org.example.util.Constants.ACC_2;
 import static org.example.util.LoggingUtils.loggingThreadError;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class SynchronizationProblemThreadService {
-    public static final String ACC_1 = "ACC001";
-    public static final String ACC_2 = "ACC002";
 
     private final BankAccountService bankAccountService;
     private final BankAccountProfilingExampleService profilingExampleService;

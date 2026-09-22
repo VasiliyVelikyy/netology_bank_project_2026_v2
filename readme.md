@@ -36,3 +36,12 @@ http://localhost:8080/process-producer-consumer
 http://localhost:8080/process-semaphore
 http://localhost:8080/process-read-write-lock
 http://localhost:8080/process-read-write-lock-downgrade
+
+### Примеры Volatile
+http://localhost:8080/volatile-race-condition
+http://localhost:8080/write-and-read-volatile
+
+### Примеры Atomic
+http://localhost:8080/atomic-examples
+http://localhost:8080/test-speed-sync-atomic
+http://localhost:8080/atomic-reference
