@@ -28,4 +28,14 @@ public class ReentrantLockAndSemaphoreDemonstrateController {
         return withdrawalSemaphoreService.requestSemaphoreWithdrawal();
     }
 
+    @GetMapping("/process-read-write-lock")
+    public String processReentrantReadWriteLock() throws InterruptedException {
+       return processReentrantLockService.processReentrantReadWriteLock();
+    }
+
+    @GetMapping("/process-read-write-lock-downgrade")
+    public String processReentrantReadWriteLockDowngrade() throws InterruptedException {
+        return processReentrantLockService.processReentrantReadWriteLockDowngrade();
+    }
+
 }

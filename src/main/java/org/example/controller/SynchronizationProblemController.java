@@ -10,20 +10,18 @@ import org.springframework.web.bind.annotation.RestController;
 public class SynchronizationProblemController {
     private final SynchronizationProblemThreadService transferService;
 
-
     @GetMapping("/race-condition")
-    public String processRaceCondition(){
+    public String processRaceCondition() {
         return transferService.processRaceCondition();
     }
 
-
     @GetMapping("/transfer-deadlock")
-    public String processDeadLock(){
+    public String processDeadLock() {
         return transferService.processDeadLock();
     }
 
     @GetMapping("/transfer-livelock")
-    public String processLiveLock(){
+    public String processLiveLock() {
         return transferService.processLiveLock();
     }
 

@@ -55,8 +55,6 @@ public class ProcessAtomicExampleService {
         int threadsCount = 10;
         double depositAmount = 10.0;
 
-        log.info("НАЧАЛО ДЕМОНСТРАЦИИ AtomicReference");
-
         BankAccountState initialState = atomicBankAccountService.getAccountRef(accountNum).get();
         if (initialState == null) {
             log.error("Счёт {} не найден", accountNum);
@@ -85,7 +83,6 @@ public class ProcessAtomicExampleService {
         BankAccountState finalState = atomicBankAccountService.getAccountRef(accountNum).get();
         double expectedBalance = startBalance + (steps * depositAmount * threadsCount);
 
-        log.info("ИТОГ");
         log.info("Счёт: {} Ожидаемый баланс: {}", finalState.accountNumber(), expectedBalance);
         log.info("Счёт: {} Фактический баланс: {}", finalState.accountNumber(), finalState.balance());
 
