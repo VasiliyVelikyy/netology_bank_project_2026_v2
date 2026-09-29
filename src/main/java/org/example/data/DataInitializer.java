@@ -10,8 +10,7 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.stream.IntStream;
 
-import static org.example.util.Constants.GEN_PREFIX;
-import static org.example.util.Constants.TRANSFER_COUNT;
+import static org.example.util.Constants.*;
 import static org.example.util.TimeUtil.evaluateExecutionTime;
 
 @Component
@@ -24,7 +23,7 @@ public class DataInitializer {
     public void init() {
         long startTime = System.nanoTime();
 
-        List<BankAccount> bankAccounts = IntStream.rangeClosed(9, TRANSFER_COUNT)
+        List<BankAccount> bankAccounts = IntStream.rangeClosed(9, ACCOUNT_COUNT)
                                                   .mapToObj(i -> new BankAccount(GEN_PREFIX + i, 100000))
                                                   .toList();
         bankAccountService.saveAll(bankAccounts);
