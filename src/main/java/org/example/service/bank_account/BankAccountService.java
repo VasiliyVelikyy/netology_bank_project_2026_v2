@@ -13,7 +13,6 @@ import static org.example.util.LoggingUtils.loggingMoneyTransfer;
 
 @Slf4j
 @Service
-
 public class BankAccountService {
     private final BankAccountRepository bankAccountRepository;
 

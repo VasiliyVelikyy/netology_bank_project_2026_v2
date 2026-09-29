@@ -45,3 +45,15 @@ http://localhost:8080/write-and-read-volatile
 http://localhost:8080/atomic-examples
 http://localhost:8080/test-speed-sync-atomic
 http://localhost:8080/atomic-reference
+
+
+### Нотификация через executor service
+http://localhost:8080/api/notifications/check-low-balance
+
+### Полная инфа клиента
+http://localhost:8080/api/clients-balance-and-email-async
+http://localhost:8080/api/clients-balance-and-email-sync
+
+
+
+
