@@ -26,7 +26,7 @@ public class NotificationLowBalanceCheckService {
         log.info("Запуск асинхронной проверки низкого баланса для {}, счетов", accounts.size());
 
         for (BankAccount account : accounts) {
-            executorService.submit(new LowBalanceCheckTask(account.getBalance(), account.getAccountNumber()));
+           executorService.submit(new LowBalanceCheckTask(account.getBalance(), account.getAccountNumber()));
         }
 
         log.info("Все задачи отправлены в пул потоков. Проверка выполняеться в фоне");

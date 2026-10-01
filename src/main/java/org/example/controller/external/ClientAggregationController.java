@@ -28,4 +28,11 @@ public class ClientAggregationController {
         List<ClientBalanceAndPhoneInfo> result =  clientAggregationService.getClientBalanceAndPhoneInfoSync();
         return ResponseEntity.ok(result);
     }
+
+
+    @GetMapping("/clients-invoke-by-timeout")
+    public ResponseEntity<List<ClientBalanceAndPhoneInfo>> getClientBalanceAndPhoneInvokeByTimeout() throws InterruptedException {
+        List<ClientBalanceAndPhoneInfo> result =  clientAggregationService.getClientBalanceAndPhoneInvokeByTimeout();
+        return ResponseEntity.ok(result);
+    }
 }

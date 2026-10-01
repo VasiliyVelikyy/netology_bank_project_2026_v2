@@ -13,8 +13,8 @@ import static org.example.util.Constants.HOST;
 public class PhoneWebClient {
     private final WebClient webClient;
 
-    public String getPhoneNumber(String accountNum) {
-        String url = HOST + "/account/" + accountNum + "/phone";
+    public String getPhoneNumber(String accountNum, String pathEndpoint) {
+        String url = HOST + "/account/" + accountNum + pathEndpoint;
 
         try {
             return webClient.get()
@@ -23,8 +23,14 @@ public class PhoneWebClient {
                     .bodyToMono(String.class)
                     .block();
         } catch (Exception e) {
-            log.error(e.getMessage(), e);
-            return "UKNOWN";
+            if (e.getCause() instanceof InterruptedException ||
+                    Thread.currentThread().isInterrupted()) {
+                log.warn("Запрос для {} был прерван из-за таймаута ", accountNum);
+            } else {
+                log.error("Реальная ошибка сети для {}: {}", accountNum, e.getMessage());
+            }
+            return "UNKNOWN";
+
         }
     }
 }
