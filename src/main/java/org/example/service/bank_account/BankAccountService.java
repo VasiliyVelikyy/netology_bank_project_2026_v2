@@ -129,4 +129,12 @@ public class BankAccountService {
     public void save(BankAccount account) {
         bankAccountRepository.save(account);
     }
+
+    public List<BankAccount> findByBalanceGreaterThan(double threshold) {
+        return bankAccountRepository.findByBalanceGreaterThan(threshold);
+    }
+
+    public List<BankAccount> findByBalanceLessThan(double threshold) {
+        return bankAccountRepository.findByBalanceLessThan(threshold);
+    }
 }
