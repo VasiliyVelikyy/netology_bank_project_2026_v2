@@ -42,7 +42,11 @@ public class ClientAggregationService {
 
         for (var acc : accounts) {
             Future<ClientBalanceAndPhoneInfo> future = phoneNumFetcher.submit(
-                    () -> aggregatePhoneAndBalance(acc.getAccountNumber(), acc.getBalance(), PATH_PHONE_WITHOUT_DELAY));
+                    () -> aggregatePhoneAndBalance(
+                            acc.getAccountNumber(),
+                            acc.getBalance(),
+                            PATH_PHONE_WITHOUT_DELAY
+                    ));
             futures.add(future);
         }
 
@@ -63,7 +67,7 @@ public class ClientAggregationService {
     }
 
     public List<ClientBalanceAndPhoneInfo> getClientBalanceAndPhoneInvokeByTimeout() throws InterruptedException {
-        long timeout = 1000;
+        long timeout = 2000;
         long startTime = System.nanoTime();
 
         log.info("Начинаем асинхронную агрегацию данных по всем счетам");

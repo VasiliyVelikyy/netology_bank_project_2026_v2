@@ -6,10 +6,13 @@ import org.example.domain.BankAccount;
 import org.example.repo.BankAccountRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+import static org.example.domain.ResultOperation.SUCCESS;
 import static org.example.util.LoggingUtils.loggingMoneyTransfer;
+import static org.example.util.TaskSimulateWork.simulateCpuWorkWithCancelIfInterrupted;
 
 @Slf4j
 @Service
@@ -136,5 +139,28 @@ public class BankAccountService {
 
     public List<BankAccount> findByBalanceLessThan(double threshold) {
         return bankAccountRepository.findByBalanceLessThan(threshold);
+    }
+
+    public List<BankAccount> findAllWithException() {
+        throw new RuntimeException("Сбой сети при подключении к бд");
+    }
+
+    public List<BankAccount> findAllWithSleep() {
+        try {
+            Thread.sleep(7000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        return bankAccountRepository.findAll();
+
+    }
+
+    public List<BankAccount> findAllWithCpuWork() {
+        var result = simulateCpuWorkWithCancelIfInterrupted(7000);
+
+        if (result == SUCCESS) {
+            return bankAccountRepository.findAll();
+        }
+        return Collections.emptyList();
     }
 }
