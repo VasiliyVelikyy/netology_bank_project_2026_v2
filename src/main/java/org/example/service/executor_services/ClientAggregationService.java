@@ -129,7 +129,7 @@ public class ClientAggregationService {
     }
 
     private ClientBalanceAndPhoneInfo aggregatePhoneAndBalance(String accountNumber, double balance, String pathEndpoint) {
-        String phone = phoneWebClient.getPhoneNumber(accountNumber, pathEndpoint);
+        String phone = phoneWebClient.getPhoneNumberSync(accountNumber, pathEndpoint);
         return new ClientBalanceAndPhoneInfo(accountNumber, balance, phone);
     }
 

@@ -30,6 +30,10 @@ public class BankAccountService {
         return account.orElseThrow(() -> new RuntimeException("Счёт не найден: " + accountNumber));
     }
 
+    public Optional<BankAccount> getAccountOpt(String accountNumber) {
+        return bankAccountRepository.findById(accountNumber);
+    }
+
 
     public void transfer(String accountFrom, String accountTo, double amount) {
         BankAccount from = getAccount(accountFrom);

@@ -12,9 +12,9 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.concurrent.ForkJoinPool;
 
+import static org.example.util.Constants.TRANSFER_COUNT;
 import static org.example.util.LoggingUtils.loggingCommonPool;
 import static org.example.util.LoggingUtils.loggingCustomPoolStats;
-import static org.example.util.Constants.TRANSFER_COUNT;
 import static org.example.util.TimeUtil.evaluateExecutionTime;
 
 @Service
@@ -35,18 +35,19 @@ public class StreamTransferService implements ApplicationRunner {
         long start = System.nanoTime();
 
         operations.forEach(op ->
-                                   bankAccountService.transferWithDoubleSync(op.from(),
-                                                                         op.to(), op.amount()));
+                bankAccountService.transferWithDoubleSync(op.from(),
+                        op.to(), op.amount()));
         return evaluateExecutionTime(start);
     }
 
     public String startParallelStream() {
         long start = System.nanoTime();
 
-        operations.parallelStream().forEach(op ->
-                                                    bankAccountService.transferWithDoubleSync(op.from(),
-                                                                                          op.to(),
-                                                                                          op.amount()));
+        operations.parallelStream()
+                .forEach(op ->
+                        bankAccountService.transferWithDoubleSync(op.from(),
+                                op.to(),
+                                op.amount()));
 
         loggingCommonPool();
         return evaluateExecutionTime(start);

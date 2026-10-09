@@ -58,3 +58,9 @@ http://localhost:8080/api/schedule-demonstrate-callable
 ### PhoneNumberService
 http://localhost:8080/api/account/ACC001/phone/delay
 
+### CompletableFuture
+http://localhost:8080/api/demonstrate-comp-future-task-client
+http://localhost:8080/api/demonstrate-comp-future-task-async-client
+http://localhost:8080/api/demonstrate-comp-future-combine
+http://localhost:8080/api/full-clients-comp-future
+
