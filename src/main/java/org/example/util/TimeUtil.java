@@ -15,6 +15,11 @@ public class TimeUtil {
         return message;
     }
 
+    public static long getRandomDelay() {
+        return  1L + (long) (Math.random() * 1000); //0 до 999
+    }
+
+
     private static void printExecutionTime(String message) {
         log.info(message);
     }

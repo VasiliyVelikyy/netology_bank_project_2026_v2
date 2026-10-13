@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import static org.example.util.TimeUtil.getRandomDelay;
+
 @RestController
 @RequestMapping("/api")
 @RequiredArgsConstructor
@@ -32,7 +34,7 @@ public class PhoneNumberController {
         String phone = phoneNumberService.findPhoneNumberByAccountNumber(accountNumber);
 
         if (phone != null) {
-            long delay = 1L + (long) (Math.random() * 1000);//0 до 999
+            long delay = getRandomDelay();
             log.info("PhoneNumberController accNum={}, delay={}", accountNumber, delay);
             Thread.sleep(delay);
 

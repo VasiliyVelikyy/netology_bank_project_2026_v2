@@ -67,7 +67,7 @@ public class ClientAggregationService {
     }
 
     public List<ClientBalanceAndPhoneInfo> getClientBalanceAndPhoneInvokeByTimeout() throws InterruptedException {
-        long timeout = 2000;
+        long timeout = 1000;
         long startTime = System.nanoTime();
 
         log.info("Начинаем асинхронную агрегацию данных по всем счетам");
