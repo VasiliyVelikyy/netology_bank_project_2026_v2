@@ -24,7 +24,7 @@ public class DataInitializer {
         long startTime = System.nanoTime();
 
         List<BankAccount> bankAccounts = IntStream.rangeClosed(9, ACCOUNT_COUNT)
-                                                  .mapToObj(i -> new BankAccount(GEN_PREFIX + i, 100000))
+                                                  .mapToObj(i -> new BankAccount(GEN_PREFIX + i, 100))
                                                   .toList();
         bankAccountService.saveAll(bankAccounts);
 

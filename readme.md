@@ -66,4 +66,8 @@ http://localhost:8080/api/full-clients-comp-future
 
 http://localhost:8080/api/demonstrate-race-condition
 
+### Fork join framework
+http://localhost:8080/api/fork-join/get-balance-scoring
+http://localhost:8080/api/sequential/get-balance-scoring
+http://localhost:8080/api/fork-join/interest/all
 
