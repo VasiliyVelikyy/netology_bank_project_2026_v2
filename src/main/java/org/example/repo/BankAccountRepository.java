@@ -8,6 +8,8 @@ import java.util.List;
 public interface BankAccountRepository extends JpaRepository<BankAccount, String> {
     BankAccount getAllByAccountNumber(String accountNumber);
 
+    BankAccount findByAccountNumber(String accountNumber);
+
     List<BankAccount> findByBalanceGreaterThan(double threshold);
 
     List<BankAccount> findByBalanceLessThan(double threshold);
