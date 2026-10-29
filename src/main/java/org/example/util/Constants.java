@@ -2,7 +2,7 @@ package org.example.util;
 
 public class Constants {
     public static final int TRANSFER_COUNT = 1000;
-    public static final int ACCOUNT_COUNT = 10000;
+    public static final int ACCOUNT_COUNT = 1000;
 
     public static final int BATCH_FOR_FORK_JOIN = 1000;
     public static final int ITERATION_FOR_SPEED_TEST = 1_000_000;
