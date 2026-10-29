@@ -19,7 +19,7 @@ public class ClientAggregationController {
 
     @GetMapping("/clients-balance-and-email-async")
     public ResponseEntity<List<ClientBalanceAndPhoneInfo>> getClientBalanceAndPhoneInfoAsync(){
-        List<ClientBalanceAndPhoneInfo> result =  clientAggregationService.getClientBalanceAndPhoneInfoAsync();
+        List<ClientBalanceAndPhoneInfo> result =  clientAggregationService.getClientBalanceAndPhoneInfoFuture();
         return ResponseEntity.ok(result);
     }
 

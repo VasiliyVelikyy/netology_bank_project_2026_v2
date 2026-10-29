@@ -31,7 +31,7 @@ public class ClientAggregationService {
         phoneNumFetcher.shutdown();
     }
 
-    public List<ClientBalanceAndPhoneInfo> getClientBalanceAndPhoneInfoAsync() {
+    public List<ClientBalanceAndPhoneInfo> getClientBalanceAndPhoneInfoFuture() {
         long startTime = System.nanoTime();
         log.info("Начинаем асинхронную агрегацию данных по всем счетам");
 
