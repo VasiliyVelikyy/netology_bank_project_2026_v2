@@ -72,6 +72,12 @@ http://localhost:8080/api/sequential/get-balance-scoring
 http://localhost:8080/api/fork-join/interest/all
 
 
-
+### Blocking queue
 http://localhost:8080/api/stat/queue
+
+
+### Virtual threads
+http://localhost:8080/api/full-clients-virtual-threads
+http://localhost:8080/api/benchmark-ex-vt-100
+http://localhost:8080/api/scope-test
 
