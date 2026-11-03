@@ -67,19 +67,19 @@ public class BalanceMonitorScheduler {
             return t;
         });
 
-//        scheduler.scheduleAtFixedRate(
-//                this::checkForLowBalance,
-//                0,
-//                10,
-//                TimeUnit.SECONDS
-//        );
-//
-//        scheduler.scheduleAtFixedRate(
-//                this::checkForHighBalance,
-//                0,
-//                30,
-//                TimeUnit.SECONDS
-//        );
+        scheduler.scheduleAtFixedRate(
+                this::checkForLowBalance,
+                0,
+                10,
+                TimeUnit.SECONDS
+        );
+
+        scheduler.scheduleAtFixedRate(
+                this::checkForHighBalance,
+                0,
+                30,
+                TimeUnit.SECONDS
+        );
         return scheduler;
 
     }
@@ -87,10 +87,12 @@ public class BalanceMonitorScheduler {
     @PreDestroy
     public void shutdown() {
         try {
+            log.info("Останавливаем ScheduledExecutorService");
             if (!scheduler.awaitTermination(5, TimeUnit.SECONDS)) {
                 scheduler.shutdownNow();
             }
         } catch (InterruptedException e) {
+            log.info("Ошибка остановки ScheduledExecutorService");
             scheduler.shutdownNow();
             Thread.currentThread().interrupt();
         }

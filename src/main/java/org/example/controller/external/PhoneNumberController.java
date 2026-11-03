@@ -35,7 +35,7 @@ public class PhoneNumberController {
 
         if (phone != null) {
             long delay = getRandomDelay();
-            log.info("PhoneNumberController accNum={}, delay={}", accountNumber, delay);
+            log.debug("PhoneNumberController accNum={}, delay={}", accountNumber, delay);
             Thread.sleep(delay);
 
             return ResponseEntity.ok(phone);

@@ -29,6 +29,8 @@ public class VirtualThreadClientAggregationService {
         log.info("Агрегация через виртуальные потоки ");
         var accounts = bankAccountService.findAll();
 
+        log.debug("найдено счетов {}", accounts.size());
+
         try (ExecutorService executorService = Executors.newVirtualThreadPerTaskExecutor()) {
             List<Future<ClientBalanceAndPhoneInfo>> futures =
                     accounts.stream()
