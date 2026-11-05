@@ -67,19 +67,19 @@ public class BalanceMonitorScheduler {
             return t;
         });
 
-        scheduler.scheduleAtFixedRate(
-                this::checkForLowBalance,
-                0,
-                10,
-                TimeUnit.SECONDS
-        );
-
-        scheduler.scheduleAtFixedRate(
-                this::checkForHighBalance,
-                0,
-                30,
-                TimeUnit.SECONDS
-        );
+//        scheduler.scheduleAtFixedRate(
+//                this::checkForLowBalance,
+//                0,
+//                10,
+//                TimeUnit.SECONDS
+//        );
+//
+//        scheduler.scheduleAtFixedRate(
+//                this::checkForHighBalance,
+//                0,
+//                30,
+//                TimeUnit.SECONDS
+   //     );
         return scheduler;
 
     }

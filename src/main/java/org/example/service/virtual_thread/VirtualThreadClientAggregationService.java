@@ -1,7 +1,9 @@
 package org.example.service.virtual_thread;
 
 
-import lombok.RequiredArgsConstructor;
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Timer;
 import lombok.extern.slf4j.Slf4j;
 import org.example.domain.BankAccount;
 import org.example.dto.ClientBalanceAndPhoneInfo;
@@ -11,18 +13,44 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.example.util.Constants.PATH_PHONE_WITH_DELAY;
 import static org.example.util.TimeUtil.evaluateExecutionTime;
 
 @Slf4j
 @Service
-@RequiredArgsConstructor
 public class VirtualThreadClientAggregationService {
     private final BankAccountService bankAccountService;
     private final PhoneWebClient webClient;
+    private final MeterRegistry meterRegistry;
 
-    private final Semaphore semaphore = new Semaphore(100);
+    private final Semaphore semaphore;
+
+    private final Counter submittedTasks;
+    private final AtomicInteger activeTasks;
+    private final Timer aggregationTimer;
+
+    public VirtualThreadClientAggregationService(BankAccountService bankAccountService,
+                                                 PhoneWebClient webClient,
+                                                 MeterRegistry meterRegistry) {
+        this.bankAccountService = bankAccountService;
+        this.webClient = webClient;
+        this.meterRegistry = meterRegistry;
+        this.semaphore = new Semaphore(100);
+        this.submittedTasks = Counter.builder("client.aggregation.virtual.threads.created")
+                .description("Total number of submitted client aggregation tasks")
+                .register(this.meterRegistry);
+
+        this.activeTasks = this.meterRegistry.gauge(
+                "client.aggregation.active.tasks",
+                new AtomicInteger(0)
+        );
+
+        this.aggregationTimer = Timer.builder("client.aggregation.duration")
+                .description("Time spent aggregating client information")
+                .register(this.meterRegistry);
+    }
 
     public List<ClientBalanceAndPhoneInfo> getFullClientInfoByVirtualThreads() {
         long startTime = System.nanoTime();
@@ -36,7 +64,10 @@ public class VirtualThreadClientAggregationService {
                     accounts.stream()
                             .map(acc ->
                                     executorService.submit(
-                                            () -> getClientBalanceAndPhoneInfo(acc)
+                                            () -> {
+                                                submittedTasks.increment();
+                                                return getClientBalanceAndPhoneInfo(acc);
+                                            }
                                     )).toList();
 
             var result = futures.stream()
@@ -66,16 +97,22 @@ public class VirtualThreadClientAggregationService {
     private ClientBalanceAndPhoneInfo getClientBalanceAndPhoneInfo(BankAccount acc) {
         try {
             semaphore.acquire();
+            activeTasks.incrementAndGet();
             try {
-                String phone = webClient.getPhoneNumberSync(acc.getAccountNumber(), PATH_PHONE_WITH_DELAY);
-                return new ClientBalanceAndPhoneInfo(acc.getAccountNumber(), acc.getBalance(), phone);
+                return aggregationTimer.record(() -> getClientInfo(acc));
             } finally {
+                activeTasks.decrementAndGet();
                 semaphore.release();
             }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new RuntimeException(e);
         }
+    }
+
+    private ClientBalanceAndPhoneInfo getClientInfo(BankAccount acc) {
+        String phone = webClient.getPhoneNumberSync(acc.getAccountNumber(), PATH_PHONE_WITH_DELAY);
+        return new ClientBalanceAndPhoneInfo(acc.getAccountNumber(), acc.getBalance(), phone);
     }
 
     public String benchMark100k() {
