@@ -81,3 +81,9 @@ http://localhost:8080/api/full-clients-virtual-threads
 http://localhost:8080/api/benchmark-ex-vt-100
 http://localhost:8080/api/scope-test
 
+
+
+http://localhost:8080/api/fill-eden
+http://localhost:8080/api/fill-survivor
+http://localhost:8080/api/proceess-leak
+
