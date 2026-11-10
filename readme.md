@@ -87,3 +87,12 @@ http://localhost:8080/api/fill-eden
 http://localhost:8080/api/fill-survivor
 http://localhost:8080/api/proceess-leak
 
+
+### Включение вывода в лог gc
+-Xlog:gc*,safepoint:file=gc.log:time,uptime,level,tags:filecount=5,filesize=20M
+
+
+### Включение gc  Shenandoah
+-XX:+UseShenandoahGC
+-Xlog:gc*,safepoint:file=gc-shenandoah.log:time,uptime,level,tags:filecount=5,filesize=20M
+
