@@ -45,7 +45,7 @@ public class ClientAggregationService {
                     () -> aggregatePhoneAndBalance(
                             acc.getAccountNumber(),
                             acc.getBalance(),
-                            PATH_PHONE_WITHOUT_DELAY
+                            PATH_PHONE_WITH_DELAY
                     ));
             futures.add(future);
         }
@@ -114,7 +114,7 @@ public class ClientAggregationService {
             var clientInfo = aggregatePhoneAndBalance(
                     acc.getAccountNumber(),
                     acc.getBalance(),
-                    PATH_PHONE_WITHOUT_DELAY);
+                    PATH_PHONE_WITH_DELAY);
             logResult(clientInfo);
             result.add(clientInfo);
         }

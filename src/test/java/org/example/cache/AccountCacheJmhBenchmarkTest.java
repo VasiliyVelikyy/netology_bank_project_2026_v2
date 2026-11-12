@@ -76,7 +76,6 @@ public class AccountCacheJmhBenchmarkTest {
         }
     }
 
-
     @Benchmark
     public void benchmarkConcurrentMapHit(ThreadState state, Blackhole blackhole) {
         String key = state.nextHitKey(this.hitKeys, this.hitKeysLength);

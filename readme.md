@@ -82,6 +82,11 @@ http://localhost:8080/api/benchmark-ex-vt-100
 http://localhost:8080/api/scope-test
 
 
+# Jmeter
+http://localhost:8080/api/full-clients-virtual-threads
+http://localhost:8080/api/clients-balance-and-email-async
+http://localhost:8080/api/clients-balance-and-email-sync
+
 
 http://localhost:8080/api/fill-eden
 http://localhost:8080/api/fill-survivor
@@ -96,3 +101,11 @@ http://localhost:8080/api/proceess-leak
 -XX:+UseShenandoahGC
 -Xlog:gc*,safepoint:file=gc-shenandoah.log:time,uptime,level,tags:filecount=5,filesize=20M
 
+
+
+
+# Jmeter
+curl -i http://localhost:8080/api/full-clients-virtual-threads
+curl -i http://localhost:8080/api/clients-balance-and-email-async
+curl -i http://localhost:8080/api/clients-balance-and-email-sync
+curl -i http://localhost:8080/api/credit/array-queue
