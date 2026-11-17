@@ -13,7 +13,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.*;
 
-import static org.example.util.Constants.PATH_PHONE_WITHOUT_DELAY;
 import static org.example.util.Constants.PATH_PHONE_WITH_DELAY;
 import static org.example.util.TimeUtil.evaluateExecutionTime;
 

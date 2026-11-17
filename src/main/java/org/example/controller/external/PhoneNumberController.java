@@ -34,7 +34,7 @@ public class PhoneNumberController {
         String phone = phoneNumberService.findPhoneNumberByAccountNumber(accountNumber);
 
         if (phone != null) {
-            long delay = 1000;//getRandomDelay();
+            long delay = getRandomDelay();
             log.debug("PhoneNumberController accNum={}, delay={}", accountNumber, delay);
             Thread.sleep(delay);
 
