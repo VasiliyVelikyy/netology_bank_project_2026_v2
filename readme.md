@@ -102,6 +102,8 @@ http://localhost:8080/api/proceess-leak
 -Xlog:gc*,safepoint:file=gc-shenandoah.log:time,uptime,level,tags:filecount=5,filesize=20M
 
 
+# Prometheus
+http://localhost:9090
 
 
 # Jmeter
@@ -109,3 +111,10 @@ curl -i http://localhost:8080/api/full-clients-virtual-threads
 curl -i http://localhost:8080/api/clients-balance-and-email-async
 curl -i http://localhost:8080/api/clients-balance-and-email-sync
 curl -i http://localhost:8080/api/credit/array-queue
+
+
+# Jaeger
+http://localhost:16686
+
+
+http://localhost:8080/api/full-clients-virtual-threads

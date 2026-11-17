@@ -4,6 +4,7 @@ package org.example.service.virtual_thread;
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Timer;
+import io.opentelemetry.context.Context;
 import lombok.extern.slf4j.Slf4j;
 import org.example.domain.BankAccount;
 import org.example.dto.ClientBalanceAndPhoneInfo;
@@ -59,7 +60,7 @@ public class VirtualThreadClientAggregationService {
 
         log.debug("найдено счетов {}", accounts.size());
 
-        try (ExecutorService executorService = Executors.newVirtualThreadPerTaskExecutor()) {
+        try (ExecutorService executorService = Context.taskWrapping(Executors.newVirtualThreadPerTaskExecutor())) {
             List<Future<ClientBalanceAndPhoneInfo>> futures =
                     accounts.stream()
                             .map(acc ->
