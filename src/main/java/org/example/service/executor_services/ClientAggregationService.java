@@ -1,5 +1,6 @@
 package org.example.service.executor_services;
 
+import io.opentelemetry.context.Context;
 import jakarta.annotation.PreDestroy;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,7 +24,7 @@ public class ClientAggregationService {
     private final BankAccountService bankAccountService;
     private final PhoneWebClient phoneWebClient;
 
-    private final ExecutorService phoneNumFetcher = Executors.newFixedThreadPool(10);
+    private final ExecutorService phoneNumFetcher = Context.taskWrapping(Executors.newFixedThreadPool(10));
 
     @PreDestroy
     public void shutdown() {
