@@ -118,3 +118,8 @@ http://localhost:16686
 
 
 http://localhost:8080/api/full-clients-virtual-threads
+
+
+# Degradation
+http://localhost:8080/api/degradation/cpu
+http://localhost:8080/api/degradation/slow-io
