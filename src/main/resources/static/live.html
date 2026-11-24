@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Balance Monitor: REST vs WebSocket</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding: 20px;
+            background-color: #f4f4f9;
+        }
+
+        .container {
+            display: flex;
+            gap: 20px;
+        }
+
+        .panel {
+            flex: 1;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            margin-top: 0;
+            color: #333;
+            border-bottom: 2px solid #ddd;
+            padding-bottom: 10px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        th {
+            background-color: #f8f9fa;
+        }
+
+        /* Анимация для визуализации дельта-обновления */
+        @keyframes highlight {
+            0% {
+                background-color: #d4edda;
+                color: #155724;
+            }
+            100% {
+                background-color: transparent;
+                color: inherit;
+            }
+        }
+
+        .updated {
+            animation: highlight 1.5s ease-out;
+        }
+
+        .status {
+            font-size: 0.9em;
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .status.ws-connected {
+            color: #28a745;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Сравнение: REST (Polling) vs WebSocket (Push)</h1>
+
+<div class="container">
+    <!-- Левая панель: REST -->
+    <div class="panel">
+        <h2>REST (Опрос каждые 2 сек)</h2>
+        <div class="status" id="rest-status">Ожидание...</div>
+        <table id="rest-table">
+            <thead>
+            <tr>
+                <th>Счет (Account)</th>
+                <th>Баланс</th>
+            </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+
+    <!-- Правая панель: WebSocket -->
+    <div class="panel">
+        <h2>WebSocket (Real-time Push)</h2>
+        <div class="status" id="ws-status">Подключение...</div>
+        <table id="ws-table">
+            <thead>
+            <tr>
+                <th>Счет (Account)</th>
+                <th>Баланс</th>
+            </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    const REST_URL = 'http://localhost:8080/api/clients-balance';
+    const WS_URL = 'ws://localhost:8080/ws/clients-balance';
+
+
+    async function fetchRestData() {
+        document.getElementById('rest-status').innerText = 'Загрузка...';
+        try {
+            const response = await fetch(REST_URL);
+            const data = await response.json();
+
+            renderRestTable(data);
+            document.getElementById('rest-status').innerText = `Обновлено: ${new Date().toLocaleTimeString()}`;
+        } catch (error) {
+            document.getElementById('rest-status').innerText = 'Ошибка сети';
+            console.error('REST Error:', error);
+        }
+    }
+
+    function renderRestTable(data) {
+        const tbody = document.querySelector('#rest-table tbody');
+        // Полная перерисовка таблицы при каждом опросе
+        tbody.innerHTML = data.map(item => `
+                <tr>
+                    <td>${item.accountNumber}</td>
+                    <td>${item.balance.toFixed(2)} ₽</td>
+                </tr>
+            `).join('');
+    }
+
+    // Запускаем опрос каждые 3000 мс
+    setInterval(fetchRestData, 3000);
+    fetchRestData(); // Первый вызов
+
+
+    // WEBSOCKET PUSH (Эффективный подход)
+    const wsStatus = document.getElementById('ws-status');
+    const wsTbody = document.querySelector('#ws-table tbody');
+    let ws;
+
+    function connectWebSocket() {
+        ws = new WebSocket(WS_URL);
+
+        ws.onopen = () => {
+            wsStatus.innerText = ' Подключено (ожидание данных)';
+            wsStatus.classList.add('ws-connected');
+        };
+
+        ws.onmessage = (event) => {
+            const data = JSON.parse(event.data);
+
+            // Проверяем, пришел ли полный список (массив) или дельта-обновление (объект)
+            if (Array.isArray(data)) {
+                // 1. Инициализация: получили полный снимок (snapshot)
+                renderWsTableInitial(data);
+            } else {
+                // 2. Обновление: пришла дельта (один измененный объект)
+                updateWsRowDelta(data);
+            }
+        };
+
+        ws.onclose = () => {
+            wsStatus.innerText = ' Соединение разорвано. Переподключение через 3 сек';
+            wsStatus.classList.remove('ws-connected');
+            setTimeout(connectWebSocket, 3000);
+        };
+
+        ws.onerror = (error) => {
+            console.error('WebSocket Error:', error);
+            ws.close();
+        };
+    }
+
+    function renderWsTableInitial(dataArray) {
+        wsTbody.innerHTML = dataArray.map(item => `
+                <tr id="row-${item.accountNumber}">
+                    <td>${item.accountNumber}</td>
+                    <td class="balance-cell">${item.balance.toFixed(2)} ₽</td>
+                </tr>
+            `).join('');
+        wsStatus.innerText = `Активно. Получено ${dataArray.length} записей.`;
+    }
+
+    function updateWsRowDelta(updateItem) {
+        //  Точечное обновление DOM. Находим только нужную строку.
+        const row = document.getElementById(`row-${updateItem.accountNumber}`);
+        if (row) {
+            const balanceCell = row.querySelector('.balance-cell');
+            balanceCell.innerText = `${updateItem.balance.toFixed(2)} ₽`;
+
+            // Добавляем класс для визуальной подсветки изменения
+            row.classList.remove('updated');
+            void row.offsetWidth; // Триггер reflow для перезапуска CSS-анимации
+            row.classList.add('updated');
+        }
+    }
+
+    // Инициализация WebSocket
+    connectWebSocket();
+</script>
+</body>
+</html>

@@ -15,6 +15,7 @@ public class TransferGeneratorService {
     private final BankAccountService bankAccountService;
 
 
+    //todo  findAll -> pagination refactoring
     private List<String> getAllAccountNumber() {
         return bankAccountService.findAll().stream()
                 .map(BankAccount::getAccountNumber)
